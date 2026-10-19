@@ -1,0 +1,67 @@
+services:
+  mongo:
+    image: mongo:7.0
+    command: [mongod, --replSet, rs0, --bind_ip_all]
+    ports:
+      - 127.0.0.1:27017:27017
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test:
+        [
+          CMD,
+          mongosh,
+          --quiet,
+          --eval,
+          'try { rs.status().ok } catch (e) { rs.initiate({_id:"rs0",members:[{_id:0,host:"mongo:27017"}]}).ok }',
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+
+  api:
+    profiles: [app]
+    build:
+      context: .
+      target: api
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      TRUST_PROXY_HOPS: 1
+      MONGODB_URI: mongodb://mongo:27017/velora?replicaSet=rs0
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:8080}
+      JWT_SECRET: ${JWT_SECRET:-}
+      ENABLE_MOCK_PAYMENTS: ${ENABLE_MOCK_PAYMENTS:-true}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    profiles: [app]
+    build:
+      context: .
+      target: web
+    ports:
+      - 127.0.0.1:8080:80
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mongo-data:

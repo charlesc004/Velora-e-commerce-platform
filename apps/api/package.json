@@ -1,0 +1,38 @@
+{
+  "name": "@velora/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc --noEmit && node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx src/seed.ts",
+    "test": "vitest run tests"
+  },
+  "dependencies": {
+    "@velora/contracts": "*",
+    "argon2": "^0.44.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
+    "stripe": "^19.1.0",
+    "tsx": "^4.20.6",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.4"
+  }
+}

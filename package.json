@@ -1,0 +1,44 @@
+{
+  "name": "velora",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c green,blue \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev -w @velora/api",
+    "dev:web": "npm run dev -w @velora/web",
+    "dev:local": "node scripts/local-dev.mjs",
+    "dev:local:api": "node scripts/local-dev.mjs --api-only",
+    "build": "npm run build -w @velora/contracts && npm run build -w @velora/api && npm run build -w @velora/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "seed": "npm run seed -w @velora/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.10.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.5.0",
+    "mongodb-memory-server": "^10.3.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^4.1.11",
+    "zod": "^3.25.76"
+  }
+}
